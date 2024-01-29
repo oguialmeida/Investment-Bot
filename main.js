@@ -6,6 +6,7 @@
 const express = require("express");
 const axios = require("axios");
 const cheerio = require("cheerio");
+const port = 3010
 
 async function getPrinceFeed() {
     try {
@@ -22,27 +23,58 @@ async function getPrinceFeed() {
             "rank",
             "name",
             "price",
-            "24",
+            "1h",
+            "24h",
             "7d",
             "marketCap",
             "volume",
             "circSupl"
         ]
 
+        const coinArr = []
+
         $(elemSelector).each((index, elem) => {
-            if(index <= 50) {
-                $(elem).children().each((childIndex, childElem)=>{
-                    const tdValue = $(childElem).text()
+            let keyIndex = 0
+            const coinObj = {}
+
+            if(index <= 9) {
+                $(elem).children().each((childIndex, childElem) => {
+                    let tdValue = $(childElem).text()
+
+                    if  (keyIndex === 1 || keyIndex === 6) {
+                        tdValue = $('p:first-child',$(childElem).html()).text()
+                    }
                     
                     if (tdValue) {
-                        console.log(tdValue)
+                        coinObj[keys[keyIndex]] = tdValue
+                        keyIndex++
                     }
                 })
+                coinArr.push(coinObj)
             }
         })
+        return coinArr
     } catch (err){
         console.error(err)
     }
 }
 
-getPrinceFeed()
+const app = express()
+
+app.get('/api/price-feed', async (req, res) => {
+    try {
+        const priceFeed = await getPrinceFeed()
+
+        return res.status(200).json({
+            result: priceFeed,
+        })
+    } catch(err) {
+        return res.status(500).json({
+            err: err.toString(),
+        })
+    }
+})
+
+app.listen(port, () => {
+    console.log(`Running on port ${port}`)
+})
