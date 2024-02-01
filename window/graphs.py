@@ -1,0 +1,1 @@
+# aqui irei juntar as informações usando Websockets
