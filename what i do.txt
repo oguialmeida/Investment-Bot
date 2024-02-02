@@ -1,0 +1,9 @@
+-> saber por quanto comprei
+-> manter o estado de comprado até que haja uma queda
+-> aproveitar o crescimento da moeda apenas
+-> quando começar a cair ou estabillizar analizar e trocar
+-> criar acompanhamento dos preços em tempo real
+-> criar um dashboard com grafico de cada moeda quando clicado
+	-> conter preços (24,7,1 ano)
+-> botão de inicio e de fim
+-> mostrar o quanto tenho atualmente de saldo e de moedas

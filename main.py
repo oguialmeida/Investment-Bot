@@ -6,10 +6,7 @@ import hmac
 import base64
 
 api_url = "https://api.kraken.com"
-buy_limit = 0
-sell_limit = 0
-buy_amount = 0.01
-sell_amount = 0.01
+current_price = requests.get(f"{api_url}/0/public/Ticker?pair=BTCUSD").json()['result']['XXBTZUSD']['c'][0]
 
 # Pega as chaves da conta do arquivo txt
 with open("keys.txt", "r") as f:
@@ -34,46 +31,37 @@ def kraken_request(url_path, data, api_key, api_sec):
     resp = requests.post((api_url + url_path), headers=headers, data=data)
     return resp
 
-
-while True:
-    # Pega o preco atual da API publica
-    current_price = requests.get("https://api.kraken.com/0/public/Ticker?pair=BTCUSD").json()['result']['XXBTZUSD']['c'][0]
+# Função que realiza a compra das crytos
+def buying_currency(buy_amount):
+    print(f"Buying {buy_amount} of BTC at {current_price}!")
     
-    # 
-    if float(current_price) < buy_limit:
-        print(f"Buying {buy_amount} of BTC at {current_price}!")
-        
-        resp = kraken_request("/0/private/AddOrder", {
-            "nonce": str(int(1000 * time.time())),
-            "ordertype": "market",
-            "type": "buy",
-            "volume": buy_amount,
-            "pair": "XBTUSD",
-        }, api_key, api_sec)
-        
-        if not resp.json()['error']:
-            print("Successfully bought BTC!")
-        else:
-            print(f"Error: { resp.json()['error'] }")
-            
-    #        
-    elif float(current_price) > sell_limit:
-        print(f"Selling {buy_amount} of BTC at {current_price}!")
-        
-        resp = kraken_request("/0/private/AddOrder", {
-            "nonce": str(int(1000 * time.time())),
-            "ordertype": "market",
-            "type": "sell",
-            "volume": sell_amount,
-            "pair": "XBTUSD",
-        }, api_key, api_sec)
-        
-        if not resp.json()['error']:
-            print("Successfully sold BTC!")
-        else:
-            print(f"Error: { resp.json()['error'] }")
-            
-    #
+    resp = kraken_request("/0/private/AddOrder", {
+        "nonce": str(int(1000 * time.time())),
+        "ordertype": "market",
+        "type": "buy",
+        "volume": buy_amount,
+        "pair": "XBTUSD",
+    }, api_key, api_sec)
+    
+    if not resp.json()['error']:
+        print("Successfully bought BTC!")
     else:
-        print(f"Current Price: {current_price}, not buying or selling")
-    time.sleep(3)
+        print(f"Error: { resp.json()['error'] }")
+
+# Função que realiza a venda das cryptos      
+def selling_currency(sell_amount):
+    print(f"Selling {sell_amount} of BTC at {current_price}!")
+    
+    resp = kraken_request("/0/private/AddOrder", {
+        "nonce": str(int(1000 * time.time())),
+        "ordertype": "market",
+        "type": "sell",
+        "volume": sell_amount,
+        "pair": "XBTUSD",
+    }, api_key, api_sec)
+    
+    if not resp.json()['error']:
+        print("Successfully sold BTC!")
+    else:
+        print(f"Error: { resp.json()['error'] }")
+        
