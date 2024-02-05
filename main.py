@@ -5,8 +5,10 @@ import hashlib
 import hmac
 import base64
 
-api_url = "https://api.kraken.com"
-current_price = requests.get(f"{api_url}/0/public/Ticker?pair=BTCUSD").json()['result']['XXBTZUSD']['c'][0]
+api_url_krakens = "https://api.kraken.com"
+api_url_awesome = "http://economia.awesomeapi.com.br"
+current_price = requests.get(f"{api_url_krakens}/0/public/Ticker?pair=BTCUSD").json()['result']['XXBTZUSD']['c'][0]
+real_value = requests.get(f"{api_url_awesome}/json/last/USD-BRL").json()["USDBRL"]["high"]
 
 # Pega as chaves da conta do arquivo txt
 with open("keys.txt", "r") as f:
@@ -28,7 +30,7 @@ def get_kraken_signature(urlpath, data, secret):
 # Autentica e deixa pronta a url para ser usada com os endpoints
 def kraken_request(url_path, data, api_key, api_sec):
     headers = {"API-Key": api_key, "API-Sign": get_kraken_signature(url_path, data, api_sec)}
-    resp = requests.post((api_url + url_path), headers=headers, data=data)
+    resp = requests.post((api_url_krakens + url_path), headers=headers, data=data)
     return resp
 
 # Função que realiza a compra das crytos
@@ -64,4 +66,3 @@ def selling_currency(sell_amount):
         print("Successfully sold BTC!")
     else:
         print(f"Error: { resp.json()['error'] }")
-        
