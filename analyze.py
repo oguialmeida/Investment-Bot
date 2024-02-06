@@ -18,7 +18,7 @@ def check_coin_existence(coin_pair):
     else:
         return False
 
-def chose_coins():
+def check_coins():
     acronyms = ['BTCUSD', 'ETHUSD', 'USDTUSD', 'SOLUSD', 'XRPUSD', 'USDCUSD', 'ADAUSD', 'AVAXUSD', 'DOGEUSD', 'LINKUSD', 'TRXUSD', 'DOTUSD', 'MATICUSD', 'ICPUSD', 'DAIUSD', 'SHIBUSD', 'LTCUSD', 'BCHUSD', 'ETCUSD', 'UNIUSD', 'ATOMUSD', 'XLMUSD', 'XMRUSD', 'APTUSD', 'OPUSD', 'IMXUSD', 'INJUSD', 'NEARUSD', 'TIAUSD', 'FILUSD', 'LDOUSD', 'ARBUSD', 'STXUSD', 'MKRUSD', 'RNDRUSD', 'SUIUSD', 'TUSDUSD', 'RUNEUSD', 'SEIUSD', 'GRTUSD', 'EGLDUSD', 'ALGOUSD', 'AAVEUSD', 'MINAUSD', 'QNTUSD', 'FLOWUSD', 'FLRUSD', 'ASTRUSD', 'FTMUSD', 'SANDUSD', 'AXSUSD', 'SNXUSD', 'XTZUSD', 'CHZUSD', 'MANAUSD', 'EOSUSD', 'BTTUSD', 'FXSUSD', 'KAVAUSD', 'BLURUSD', 'PYTHUSD', 'JUPUSD', 'CTSIUSD', 'BANDUSD', 'CHZUSD', 'AUDIOUSD', 'XTZUSD', 'ALPHAUSD', 'NMRUSD', 'MIRUSD', 'BLZUSD', 'LPTUSD', 'AGLDUSD', 'FLOWUSD', 'KSMUSD', 'NANOUSD', 'EWTUSD', 'ARPAUSD', 'ZRXUSD', 'REQUSD', 'CRVUSD', 'SANDUSD', 'PHAUSD', 'UNFIUSD', 'TVKUSD', 'ENSUSD', 'OGNUSD', 'CELRUSD', 'DENTUSD', 'QNTUSD', 'FETUSD', 'UMAUSD', 'BANDUSD', 'WOOUSD']
     size_arr = len(acronyms)
     
@@ -34,3 +34,9 @@ def chose_coins():
         time.sleep(1)
 
     return exist_coin
+
+def chose_coin():
+    valid_coins = check_coins()
+
+    print(valid_coins)
+
