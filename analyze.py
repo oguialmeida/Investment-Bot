@@ -1,5 +1,8 @@
 import requests
 import time
+import yfinance as yf
+import pandas as pd
+from datetime import datetime
 
 def calc_variation(today_price, yesterday_price, week_price, year_price):   
     variation_total = ((today_price - yesterday_price) * 2) + ((today_price - week_price) * 2.5) + ((today_price - year_price) * 3)
@@ -35,8 +38,19 @@ def check_coins():
 
     return exist_coin
 
+def get_coin_value():
+    start = datetime(2020, 1, 1)
+    end = datetime.now().date().isoformat()
+    symbol = 'BTC-USD'
+    
+    df = yf.download(symbol, start=start, end=end)
+    
+    print(df)
+
 def chose_coin():
     valid_coins = check_coins()
 
     print(valid_coins)
+    
+get_coin_value()
 
