@@ -4,17 +4,18 @@ import urllib.parse
 import hashlib
 import hmac
 import base64
+import os
+from dotenv import load_dotenv
 
-api_url_krakens = "https://api.kraken.com"
-api_url_awesome = "http://economia.awesomeapi.com.br"
+# Carregar variáveis de ambiente do arquivo .env
+load_dotenv()
+
+api_url_krakens = os.getenv("API_CORR")
+api_url_awesome = os.getenv("API_REAL")
 current_price = requests.get(f"{api_url_krakens}/0/public/Ticker?pair=BTCUSD").json()['result']['XXBTZUSD']['c'][0]
 real_value = requests.get(f"{api_url_awesome}/json/last/USD-BRL").json()["USDBRL"]["high"]
-
-# Pega as chaves da conta do arquivo txt
-with open("keys.txt", "r") as f:
-    lines = f.read().splitlines()
-    api_key = lines[0]
-    api_sec = lines[1]
+api_key = os.getenv("API_KEY")
+api_sec = os.getenv("API_SEC")
     
 # Cria uma assinatura com base na chave
 def get_kraken_signature(urlpath, data, secret):

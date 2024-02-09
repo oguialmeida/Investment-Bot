@@ -1,8 +1,14 @@
+import os
 import requests
 import time
 import yfinance as yf
 import pandas as pd
+import json
 from datetime import datetime
+from dotenv import load_dotenv
+
+# Carregar variáveis de ambiente do arquivo .env
+load_dotenv()
 
 def calc_variation(today_price, yesterday_price, week_price, year_price):   
     variation_total = ((today_price - yesterday_price) * 2) + ((today_price - week_price) * 2.5) + ((today_price - year_price) * 3)
@@ -10,7 +16,7 @@ def calc_variation(today_price, yesterday_price, week_price, year_price):
     return variation_total
 
 def check_coin_existence(coin_pair):
-    api_url_kraken = "https://api.kraken.com"
+    api_url_kraken = os.getenv("API_CORR")
     endpoint = "/0/public/Ticker"
     pair_url = f"{api_url_kraken}{endpoint}?pair={coin_pair}"
 
@@ -22,7 +28,12 @@ def check_coin_existence(coin_pair):
         return False
 
 def check_coins():
-    acronyms = ['BTCUSD', 'ETHUSD', 'USDTUSD', 'SOLUSD', 'XRPUSD', 'USDCUSD', 'ADAUSD', 'AVAXUSD', 'DOGEUSD', 'LINKUSD', 'TRXUSD', 'DOTUSD', 'MATICUSD', 'ICPUSD', 'DAIUSD', 'SHIBUSD', 'LTCUSD', 'BCHUSD', 'ETCUSD', 'UNIUSD', 'ATOMUSD', 'XLMUSD', 'XMRUSD', 'APTUSD', 'OPUSD', 'IMXUSD', 'INJUSD', 'NEARUSD', 'TIAUSD', 'FILUSD', 'LDOUSD', 'ARBUSD', 'STXUSD', 'MKRUSD', 'RNDRUSD', 'SUIUSD', 'TUSDUSD', 'RUNEUSD', 'SEIUSD', 'GRTUSD', 'EGLDUSD', 'ALGOUSD', 'AAVEUSD', 'MINAUSD', 'QNTUSD', 'FLOWUSD', 'FLRUSD', 'ASTRUSD', 'FTMUSD', 'SANDUSD', 'AXSUSD', 'SNXUSD', 'XTZUSD', 'CHZUSD', 'MANAUSD', 'EOSUSD', 'BTTUSD', 'FXSUSD', 'KAVAUSD', 'BLURUSD', 'PYTHUSD', 'JUPUSD', 'CTSIUSD', 'BANDUSD', 'CHZUSD', 'AUDIOUSD', 'XTZUSD', 'ALPHAUSD', 'NMRUSD', 'MIRUSD', 'BLZUSD', 'LPTUSD', 'AGLDUSD', 'FLOWUSD', 'KSMUSD', 'NANOUSD', 'EWTUSD', 'ARPAUSD', 'ZRXUSD', 'REQUSD', 'CRVUSD', 'SANDUSD', 'PHAUSD', 'UNFIUSD', 'TVKUSD', 'ENSUSD', 'OGNUSD', 'CELRUSD', 'DENTUSD', 'QNTUSD', 'FETUSD', 'UMAUSD', 'BANDUSD', 'WOOUSD']
+    json_file_path = 'coins.json'
+    
+    with open(json_file_path, 'r') as json_file:
+        json_data = json.load(json_file)
+        acronyms = json_data['coins']
+        
     size_arr = len(acronyms)
     
     exist_coin = []
@@ -38,19 +49,27 @@ def check_coins():
 
     return exist_coin
 
-def get_coin_value():
-    start = datetime(2020, 1, 1)
-    end = datetime.now().date().isoformat()
-    symbol = 'BTC-USD'
+def download_info_coin(start, end):
+    acronyms = check_coins()
     
-    df = yf.download(symbol, start=start, end=end)
+    df_list = []
+
+    for acronym in acronyms:
+        try:
+            data = yf.download(acronym.replace("USD", "-USD"), start=start, end=end)
+            data['Coin'] = acronym
+            df_list.append(data)
+            print(f"Dados obtidos para {acronym}.")
+        except Exception as e:
+            print(f"Erro ao obter dados para {acronym}: {e}")
+
+        time.sleep(1)
+
+    if len(df_list) > 0:
+        df = pd.concat(df_list)
+        df.to_csv('currency_data.csv', index=False)
+        return df
+    else:
+        return None
     
-    print(df)
-
-def chose_coin():
-    valid_coins = check_coins()
-
-    print(valid_coins)
-    
-get_coin_value()
-
+download_info_coin(datetime(2024, 2, 4), datetime.now().date().isoformat())
