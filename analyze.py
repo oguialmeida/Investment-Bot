@@ -4,20 +4,17 @@ import time
 import yfinance as yf
 import pandas as pd
 import json
+import constants
 from datetime import datetime
-from dotenv import load_dotenv
 
-# Carregar variáveis de ambiente do arquivo .env
-load_dotenv()
+# Datas para download
+initial_date = datetime(2024, 2, 7)
+final_date = datetime.now().date().isoformat()
 
-def calc_variation(today_price, yesterday_price, week_price, year_price):   
-    variation_total = ((today_price - yesterday_price) * 2) + ((today_price - week_price) * 2.5) + ((today_price - year_price) * 3)
-    return variation_total
-
+# Checa a existência da moeda na plataforma
 def check_coin_existence(coin_pair):
-    api_url_kraken = os.getenv("API_CORR")
     endpoint = "/0/public/Ticker"
-    pair_url = f"{api_url_kraken}{endpoint}?pair={coin_pair}"
+    pair_url = f"{constants.api_url_broker}{endpoint}?pair={coin_pair}"
 
     response = requests.get(pair_url).json()['error']
 
@@ -26,8 +23,9 @@ def check_coin_existence(coin_pair):
     else:
         return False
 
-def check_coins():
-    json_file_path = 'coins.json'
+# Retorna uma lista com as moedas da plataforma
+def existing_coins():
+    json_file_path = './data/coins.json'
     
     with open(json_file_path, 'r') as json_file:
         json_data = json.load(json_file)
@@ -48,9 +46,10 @@ def check_coins():
 
     return exist_coin
 
+# Faz o download das informações que irão se manipuladas
 def download_info_coin(start, end):
-    acronyms = check_coins()
-    csv_file_path = 'currency_data.csv'
+    acronyms = existing_coins()
+    csv_file_path = './data/currency_data.csv'
     
     if os.path.exists(csv_file_path):
         existing_data = pd.read_csv(csv_file_path)
@@ -81,5 +80,24 @@ def download_info_coin(start, end):
         return merged_data
     else:
         return existing_data
-    
-download_info_coin(datetime(2024, 2, 4), datetime.now().date().isoformat())
+
+# Calcula a variação histórica da moeda e adiciona pesos de segurança
+def calc_history_variation(today_price, yesterday_price, week_price, year_price):   
+    variation_total = ((today_price - yesterday_price) * 2) + ((today_price - week_price) * 2.5) + ((today_price - year_price) * 3)
+    return variation_total
+
+# Escolhe a moeda com melhor crescimento
+def chose_best_growth():
+    return
+
+# Usa tecnicas de deep learning para prever o crescimento da moeda
+def coin_predict():
+    return
+
+# Analisa as melhores moedas de acordo com sites de notícias
+def check_coin_news():
+    return
+
+# Realiza a analise de risco de se manter a moeda
+def check_risk():
+    return
