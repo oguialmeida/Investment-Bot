@@ -25,9 +25,7 @@ def check_coin_existence(coin_pair):
 
 # Retorna uma lista com as moedas da plataforma
 def existing_coins():
-    json_file_path = './data/coins.json'
-    
-    with open(json_file_path, 'r') as json_file:
+    with open(constants.json_data_path, 'r') as json_file:
         json_data = json.load(json_file)
         acronyms = json_data['coins']
         
@@ -47,9 +45,8 @@ def existing_coins():
     return exist_coin
 
 # Faz o download das informações que irão se manipuladas
-def download_info_coin(start, end):
+def download_info_coin(start, end, csv_file_path):
     acronyms = existing_coins()
-    csv_file_path = './data/currency_data.csv'
     
     if os.path.exists(csv_file_path):
         existing_data = pd.read_csv(csv_file_path)
@@ -81,23 +78,31 @@ def download_info_coin(start, end):
     else:
         return existing_data
 
-# Calcula a variação histórica da moeda e adiciona pesos de segurança
-def calc_history_variation(today_price, yesterday_price, week_price, year_price):   
-    variation_total = ((today_price - yesterday_price) * 2) + ((today_price - week_price) * 2.5) + ((today_price - year_price) * 3)
-    return variation_total
-
 # Escolhe a moeda com melhor crescimento
-def chose_best_growth():
-    return
+def chose_best_growth(csv_file_path):
+    # Leia o arquivo CSV
+    data = pd.read_csv(csv_file_path)
+
+    # Converte a coluna 'Date' para o tipo datetime
+    data['Date'] = pd.to_datetime(data['Date'])
+
+    # Calcula o percentual de crescimento histórico para cada moeda
+    data['Growth'] = (data.groupby('Coin')['High'].transform('last') - data.groupby('Coin')['High'].transform('first')) / data.groupby('Coin')['High'].transform('first') * 100
+
+    # Seleciona a moeda com o maior percentual de crescimento histórico
+    best_coin = data.loc[data.groupby('Coin')['Growth'].idxmax(), 'Coin'].iloc[0]
+    
+    return best_coin
+
+# Calcula a variação histórica da moeda e adiciona pesos de segurança
+def calc_history_variation(today_price, yesterday_price, week_price, month_price, year_price):   
+    variation_total = ((today_price - yesterday_price) * 2) + ((today_price - week_price) * 2.5) + ((today_price - month_price) * 3) + ((today_price - year_price) * 3.5)
+    return variation_total
 
 # Usa tecnicas de deep learning para prever o crescimento da moeda
 def coin_predict():
     return
 
-# Analisa as melhores moedas de acordo com sites de notícias
-def check_coin_news():
-    return
-
 # Realiza a analise de risco de se manter a moeda
-def check_risk():
+def check_risk(initial_amount, atual_amount):
     return

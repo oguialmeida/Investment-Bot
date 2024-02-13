@@ -5,6 +5,10 @@ import constants
 
 current_price = requests.get(f"{constants.api_url_broker}/0/public/Ticker?pair=BTCUSD").json()['result']['XXBTZUSD']['c'][0]
 real_value = requests.get(f"{constants.api_url_awesome}/json/last/USD-BRL").json()["USDBRL"]["high"]
+
+# Apresenta informações da carteira
+def wallet_information():
+    return
     
 # Função que realiza a compra das crytos
 def buying_currency(buy_amount):
