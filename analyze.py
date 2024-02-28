@@ -5,11 +5,12 @@ import yfinance as yf
 import pandas as pd
 import json
 import constants
-from datetime import datetime
 
 # Datas para download
-initial_date = datetime(2024, 2, 7)
-final_date = datetime.now().date().isoformat()
+dates = [constants.one_days_ago, constants.seven_days_ago, constants.thirty_days_ago, constants.one_year_ago]
+
+# Historico de precos
+precos = [constants.csv_history_day, constants.csv_history_week, constants.csv_history_month, constants.csv_history_year]
 
 # Checa a existência da moeda na plataforma
 def check_coin_existence(coin_pair):
@@ -40,7 +41,6 @@ def existing_coins():
             exist_coin.append(acronyms)
             count += 1
             print(f"Existe: {acronyms}... {str(count)} de {size_arr}")
-        time.sleep(1)
 
     return exist_coin
 
@@ -106,3 +106,12 @@ def coin_predict():
 # Realiza a analise de risco de se manter a moeda
 def check_risk(initial_amount, atual_amount):
     return
+
+#
+def chose_best_coin():
+    for i in range(len(precos)):
+        download_info_coin(str(dates[i]), str(constants.atual_date), precos[i])
+        print(chose_best_growth(precos[i]))
+    return
+
+chose_best_coin()
